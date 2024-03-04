@@ -1,0 +1,525 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "Fs5TR4iibJE6"
+   },
+   "source": [
+    "# Using PYNQ library for PMOD_ADC\n",
+    "\n",
+    "This just uses the built in Pmod_ADC library to read the value on the PMOD_AD2 peripheral."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 83,
+   "metadata": {
+    "id": "xjDlpBuobJE-"
+   },
+   "outputs": [],
+   "source": [
+    "from pynq.overlays.base import BaseOverlay\n",
+    "from pynq.lib import Pmod_ADC\n",
+    "base = BaseOverlay(\"base.bit\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 84,
+   "metadata": {
+    "id": "4UMzOxCBbJE_"
+   },
+   "outputs": [],
+   "source": [
+    "adc = Pmod_ADC(base.PMODB)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "hPqHRI81bJE_"
+   },
+   "source": [
+    "Read the raw value and the 12 bit values from channel 1.\n",
+    "\n",
+    "Refer to docs: https://pynq.readthedocs.io/en/v2.1/pynq_package/pynq.lib/pynq.lib.pmod.html#pynq-lib-pmod"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 85,
+   "metadata": {
+    "id": "ZUPuwo0bbJFA"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[1895]"
+      ]
+     },
+     "execution_count": 85,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "adc.read_raw(ch1=1, ch2=0, ch3=0)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 87,
+   "metadata": {
+    "id": "f4KtefkVbJFA"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[0.9448]"
+      ]
+     },
+     "execution_count": 87,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "adc.read(ch1=1, ch2=0, ch3=0)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 88,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Type in the interface ID used (PMODA or PMODB): PMODB\n",
+      "Type in the frequency/Hz of the waveform: 100\n"
+     ]
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "from time import sleep\n",
+    "from pynq.overlays.base import BaseOverlay\n",
+    "from pynq.lib import Pmod_ADC\n",
+    "\n",
+    "base = BaseOverlay(\"base.bit\")\n",
+    "\n",
+    "\n",
+    "if_id = input(\"Type in the interface ID used (PMODA or PMODB): \")\n",
+    "if if_id.upper()=='PMODA':\n",
+    "    adc = Pmod_ADC(base.PMODA)\n",
+    "else:\n",
+    "    adc = Pmod_ADC(base.PMODB)\n",
+    "\n",
+    "freq = int(input(\"Type in the frequency/Hz of the waveform: \"))\n",
+    "period = 1/freq\n",
+    "log_interval_us = 0\n",
+    "\n",
+    "# Assume Channel 0 is connected to the waveform generator\n",
+    "adc.start_log(1,0,0,log_interval_us)\n",
+    "sleep(3*period)\n",
+    "log = adc.get_log()\n",
+    "\n",
+    "# Draw the figure\n",
+    "%matplotlib inline\n",
+    "import matplotlib.pyplot as plt\n",
+    "plt.plot(range(len(log)), log, 'ro')\n",
+    "plt.title('PMOD ADC Waveform')\n",
+    "plt.axis([0, len(log), min(log), max(log)])\n",
+    "plt.show()\n",
+    "\n",
+    "adc.reset()\n",
+    "del adc,base"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "HcIGxRCDbJFA"
+   },
+   "source": [
+    "# Using MicroblazeLibrary\n",
+    "\n",
+    "Here we're going down a level and using the microblaze library to write I2C commands directly to the PMOD_AD2 peripheral\n",
+    "\n",
+    "Use the documentation on the PMOD_AD2 to answer lab questions"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "id": "SGWzJ5N6bJFB"
+   },
+   "outputs": [
+    {
+     "data": {
+      "application/javascript": [
+       "\n",
+       "try {\n",
+       "require(['notebook/js/codecell'], function(codecell) {\n",
+       "  codecell.CodeCell.options_default.highlight_modes[\n",
+       "      'magic_text/x-csrc'] = {'reg':[/^%%microblaze/]};\n",
+       "  Jupyter.notebook.events.one('kernel_ready.Kernel', function(){\n",
+       "      Jupyter.notebook.get_cells().map(function(cell){\n",
+       "          if (cell.cell_type == 'code'){ cell.auto_highlight(); } }) ;\n",
+       "  });\n",
+       "});\n",
+       "} catch (e) {};\n"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/javascript": [
+       "\n",
+       "try {\n",
+       "require(['notebook/js/codecell'], function(codecell) {\n",
+       "  codecell.CodeCell.options_default.highlight_modes[\n",
+       "      'magic_text/x-csrc'] = {'reg':[/^%%pybind11/]};\n",
+       "  Jupyter.notebook.events.one('kernel_ready.Kernel', function(){\n",
+       "      Jupyter.notebook.get_cells().map(function(cell){\n",
+       "          if (cell.cell_type == 'code'){ cell.auto_highlight(); } }) ;\n",
+       "  });\n",
+       "});\n",
+       "} catch (e) {};\n"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "from pynq.overlays.base import BaseOverlay\n",
+    "from pynq.lib import MicroblazeLibrary\n",
+    "base = BaseOverlay(\"base.bit\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "id": "i0zwGg1abJFB"
+   },
+   "outputs": [],
+   "source": [
+    "liba = MicroblazeLibrary(base.PMODB, ['i2c'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "id": "AAkHZw_QbJFB"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['__class__',\n",
+       " '__delattr__',\n",
+       " '__dict__',\n",
+       " '__dir__',\n",
+       " '__doc__',\n",
+       " '__eq__',\n",
+       " '__format__',\n",
+       " '__ge__',\n",
+       " '__getattribute__',\n",
+       " '__gt__',\n",
+       " '__hash__',\n",
+       " '__init__',\n",
+       " '__init_subclass__',\n",
+       " '__le__',\n",
+       " '__lt__',\n",
+       " '__module__',\n",
+       " '__ne__',\n",
+       " '__new__',\n",
+       " '__reduce__',\n",
+       " '__reduce_ex__',\n",
+       " '__repr__',\n",
+       " '__setattr__',\n",
+       " '__sizeof__',\n",
+       " '__str__',\n",
+       " '__subclasshook__',\n",
+       " '__weakref__',\n",
+       " '_build_constants',\n",
+       " '_build_functions',\n",
+       " '_mb',\n",
+       " '_populate_typedefs',\n",
+       " '_rpc_stream',\n",
+       " 'active_functions',\n",
+       " 'i2c_close',\n",
+       " 'i2c_get_num_devices',\n",
+       " 'i2c_open',\n",
+       " 'i2c_open_device',\n",
+       " 'i2c_read',\n",
+       " 'i2c_write',\n",
+       " 'release',\n",
+       " 'reset',\n",
+       " 'visitor']"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dir(liba) # list the available commands for the liba object"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "2nXUx1L_bJFB"
+   },
+   "source": [
+    "In the cell below, open a new i2c device. Check the resources for the i2c_open parameters"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "G1739qZebJFB"
+   },
+   "outputs": [],
+   "source": [
+    "# Open a new I2C device\n",
+    "device = liba.i2c_open(1,2)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {
+    "id": "Vnmp6VzDbJFC"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['__call__',\n",
+       " '__class__',\n",
+       " '__delattr__',\n",
+       " '__dict__',\n",
+       " '__dir__',\n",
+       " '__doc__',\n",
+       " '__eq__',\n",
+       " '__format__',\n",
+       " '__ge__',\n",
+       " '__getattribute__',\n",
+       " '__gt__',\n",
+       " '__hash__',\n",
+       " '__init__',\n",
+       " '__init_subclass__',\n",
+       " '__le__',\n",
+       " '__lt__',\n",
+       " '__module__',\n",
+       " '__ne__',\n",
+       " '__new__',\n",
+       " '__reduce__',\n",
+       " '__reduce_ex__',\n",
+       " '__repr__',\n",
+       " '__setattr__',\n",
+       " '__sizeof__',\n",
+       " '__str__',\n",
+       " '__subclasshook__',\n",
+       " '__weakref__',\n",
+       " '_call_function',\n",
+       " '_handle_stream',\n",
+       " 'call',\n",
+       " 'call_async',\n",
+       " 'function',\n",
+       " 'index',\n",
+       " 'return_type',\n",
+       " 'stream']"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dir(device) # list the commands for the device class"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "VuiNLUXfbJFC"
+   },
+   "source": [
+    "Below we write a command to the I2C channel and then read from the I2C channel. Change the buf[0] value to select different channels. See the AD spec sheet Configuration Register. https://www.analog.com/media/en/technical-documentation/data-sheets/AD7991_7995_7999.pdf\n",
+    "\n",
+    "Changing the number of channels to read from will require a 2 byte read for each channel!"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "NkTblJ1obJFC"
+   },
+   "outputs": [],
+   "source": [
+    "buf = bytearray(2)\n",
+    "buf[0] = int('00000000', 2)\n",
+    "device.write(0x28, buf, 1)\n",
+    "device.read(0x28, buf, 2)\n",
+    "print(format(int(((buf[0] << 8) | buf[1])), '#018b'))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "e18BrrVSbJFC"
+   },
+   "source": [
+    "Compare the binary output given by ((buf[0]<<8) | buf[1]) to the AD7991 spec sheet. You can select the data only using the following command"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {
+    "id": "s3wcNQTybJFC"
+   },
+   "outputs": [],
+   "source": [
+    "result_12bit = (((buf[0] & 0x0F) << 8) | buf[1])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "id": "FPDa1IiSbJFD"
+   },
+   "source": [
+    "# Using MicroBlaze"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "2JvyY5QmbJFD"
+   },
+   "outputs": [],
+   "source": [
+    "base = BaseOverlay(\"base.bit\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {
+    "id": "pLrRT0eobJFD"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<pre>Compile FAILED\n",
+       "cell_magic: In function 'int read_adc()':\n",
+       "cell_magic:9:15: error: 'i2c_device' was not declared in this scope; did you mean 'device'?\n",
+       "</pre>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.HTML object>"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%microblaze base.PMODB\n",
+    "\n",
+    "#include \"i2c.h\"\n",
+    "\n",
+    "int read_adc(){\n",
+    "    i2c device = i2c_open(3, 2);\n",
+    "    unsigned char buf[2];\n",
+    "    buf[0] = 0;\n",
+    "    i2c_write(i2c_device, 0x28, buf, 1);\n",
+    "    i2c_read(i2c_device, 0x28, buf, 2);\n",
+    "    return ((buf[0] & 0x0F) << 8) | buf[1];\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "WtBxES6fbJFD"
+   },
+   "outputs": [],
+   "source": [
+    "read_adc()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "colab": {
+   "name": "iic_example.ipynb",
+   "provenance": []
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.2"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 1
+}
